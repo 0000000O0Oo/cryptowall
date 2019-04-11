@@ -31,9 +31,9 @@ vector<string> ListDirectory(string& directory) {
         // otherwise, add it to the vector.
         if (strcmp(ent->d_name, ".") && strcmp(ent->d_name, "..")) {
           if (ent->d_type == DT_DIR) {
-            q.push(directory + ent->d_name);
+            q.push(directory + ent->d_name + '/');
           } else {
-            files.push_back(directory + ent->d_name);
+            files.push_back(q.front() + ent->d_name);
           }
         }
       }
