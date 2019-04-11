@@ -84,8 +84,7 @@ void FileEncryptor::Encrypt(const string& filename) const {
 void FileEncryptor::Decrypt(const string& filename) const {
   // Make sure the length of the file to decrypt is long enough.
   // It has at least to be something like 'a.fuxsc', i.e., length >= 7.
-  if (!FileEncryptor::FilenameEndsIn(filename, kNewExtension)
-      || filename.size() <= kNewExtension.size()) {
+  if (!FilenameEndsIn(filename, kNewExtension) || filename.size() <= kNewExtension.size()) {
     return;
   }
 
