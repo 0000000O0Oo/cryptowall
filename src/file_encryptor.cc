@@ -1,5 +1,8 @@
 #include "file_encryptor.h"
 
+extern "C" {
+#include <unistd.h>
+}
 #include <cstring>
 #include <queue>
 
@@ -74,6 +77,8 @@ void FileEncryptor::Encrypt(const string& filename) const {
   string new_name = filename + kNewExtension;
   FileSource f(filename.c_str(), true,
       new StreamTransformationFilter(e, new HexEncoder(new FileSink(new_name.c_str()))));
+
+  unlink(filename.c_str());
 }
 
 void FileEncryptor::Decrypt(const string& filename) const {
@@ -89,6 +94,8 @@ void FileEncryptor::Decrypt(const string& filename) const {
   string old_name = GetOriginalFilename(filename);
   FileSource f(filename.c_str(), true,
       new HexDecoder(new StreamTransformationFilter(d, new FileSink(old_name.c_str()))));
+
+  unlink(filename.c_str());
 }
 
 string FileEncryptor::Export() const {
@@ -103,7 +110,7 @@ string FileEncryptor::Base64Encode(byte* bytes) {
 }
 
 string FileEncryptor::GetOriginalFilename(string filename) {
-  return filename.erase(filename.size() - kNewExtension.size()) + ".res";
+  return filename.erase(filename.size() - kNewExtension.size());
 }
 
 bool FileEncryptor::FilenameEndsIn(const std::string& filename, const std::string& keyword) {
