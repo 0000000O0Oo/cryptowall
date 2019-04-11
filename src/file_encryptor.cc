@@ -1,43 +1,39 @@
 #include "file_encryptor.h"
 
 #include <iostream>
+#include <fstream>
 #include <cstring>
 #include <queue>
 
 #include <cryptopp/osrng.h>
 #include <cryptopp/modes.h>
-#include <cryptopp/filters.h>
+#include <cryptopp/files.h>
+#include <cryptopp/hex.h>
 
 using std::queue;
 using std::vector;
 using std::string;
-
-using CryptoPP::byte;
+using std::ifstream;
+using std::ofstream;
 using CryptoPP::AES;
-using CryptoPP::byte;
+using CryptoPP::CFB_Mode;
+using CryptoPP::FileSource;
+using CryptoPP::FileSink;
+using CryptoPP::HexEncoder;
+using CryptoPP::HexDecoder;
 using CryptoPP::AutoSeededRandomPool;
+using CryptoPP::StreamTransformationFilter;
 
+
+const std::string FileEncryptor::kNewExtension = ".fuxsc";
 
 FileEncryptor::FileEncryptor(const string& directory) : iv_(), key_(), directory_(directory) {
   AutoSeededRandomPool rnd;
-
-  // Generate iv.
-  iv_ = new byte[AES::BLOCKSIZE+1];
-  rnd.GenerateBlock(iv_, AES::BLOCKSIZE);
-  iv_[AES::BLOCKSIZE] = 0x00;
-
-  // Generate key.
-  key_ = new byte[AES::DEFAULT_KEYLENGTH + 1];
+  rnd.GenerateBlock(iv_, AES::DEFAULT_BLOCKSIZE);
   rnd.GenerateBlock(key_, AES::DEFAULT_KEYLENGTH);
-  key_[AES::DEFAULT_KEYLENGTH] = 0x00;
 
   // If `directory` doesn't end with a slash, then append a slash.
   directory_ += (directory_.back() != '/') ? "/" : "";
-}
-
-FileEncryptor::~FileEncryptor() {
-  delete[] iv_;
-  delete[] key_;
 }
 
 
@@ -67,6 +63,39 @@ vector<string> FileEncryptor::ListDirectory() const {
     }
     q.pop();
   }
-
   return files;
+}
+
+// The following object created with new do not require explicit destruction.
+void FileEncryptor::Encrypt(const string& filename) const {
+  CFB_Mode<AES>::Encryption e(key_, sizeof(key_), iv_);
+
+  string new_name = filename + kNewExtension;
+  FileSource f(filename.c_str(), true,
+      new StreamTransformationFilter(e, new HexEncoder(new FileSink(new_name.c_str()))));
+}
+
+void FileEncryptor::Decrypt(const string& filename) const {
+  // Make sure the length of the file to decrypt is long enough.
+  // It has at least to be something like 'a.fuxsc', i.e., length >= 7.
+  if (!FileEncryptor::FilenameEndsIn(filename, kNewExtension)
+      || filename.size() <= kNewExtension.size()) {
+    return;
+  }
+
+  CFB_Mode<AES>::Decryption d(key_, sizeof(key_), iv_);
+
+  string old_name = GetOriginalFilename(filename);
+  FileSource f(filename.c_str(), true,
+      new HexDecoder(new StreamTransformationFilter(d, new FileSink(old_name.c_str()))));
+}
+
+
+string FileEncryptor::GetOriginalFilename(string filename) {
+  return filename.erase(filename.size() - kNewExtension.size()) + ".res";
+}
+
+bool FileEncryptor::FilenameEndsIn(const std::string& filename, const std::string& keyword) {
+  return filename.size() >= keyword.size()
+    && !filename.compare(filename.size() - keyword.size(), keyword.size(), keyword);
 }

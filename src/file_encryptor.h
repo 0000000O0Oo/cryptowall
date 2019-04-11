@@ -14,17 +14,19 @@ extern "C" {
 class FileEncryptor {
  public:
   FileEncryptor(const std::string& directory);
-  virtual ~FileEncryptor();
+  virtual ~FileEncryptor() = default;
 
   std::vector<std::string> ListDirectory() const;
+  void Encrypt(const std::string& filename) const;
+  void Decrypt(const std::string& filename) const;
 
- private:
-  void EncryptDirectory(const std::string& directory) const;
-  void DecryptDirectory(const std::string& directory) const;
+ private:  
+  static std::string GetOriginalFilename(std::string filename);
+  static bool FilenameEndsIn(const std::string& filename, const std::string& keyword);
+  static const std::string kNewExtension;
 
-  
-  CryptoPP::byte* iv_;
-  CryptoPP::byte* key_;
+  CryptoPP::byte iv_[CryptoPP::AES::DEFAULT_BLOCKSIZE];
+  CryptoPP::byte key_[CryptoPP::AES::DEFAULT_KEYLENGTH];
   std::string directory_;
 };
 

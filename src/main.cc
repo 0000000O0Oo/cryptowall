@@ -16,7 +16,10 @@ int main() {
 
   for (const auto& file : files) {
     string new_name = file + ".fuxsc";
-    //rename(file.c_str(), new_name.c_str());
-    cout << "renamed: " << file << " -> " << new_name << endl;
+    cout << "encrypting: " << file << endl;
+    encryptor.Encrypt(file);
+    encryptor.Decrypt(file + ".fuxsc");
   }
+
+  return EXIT_SUCCESS;
 }
