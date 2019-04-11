@@ -33,12 +33,6 @@ FileEncryptor::FileEncryptor(const string& directory) : iv_(), key_(), directory
   rnd.GenerateBlock(iv_, AES::DEFAULT_BLOCKSIZE);
   rnd.GenerateBlock(key_, AES::DEFAULT_KEYLENGTH);
 
-  //string b64iv = Base64Encode(iv_);
-  //string b64key = Base64Encode(key_);
-
-  //std::cout << b64iv << std::endl;
-  //std::cout << b64key << std::endl;
-
   // If `directory` doesn't end with a slash, then append a slash.
   directory_ += (directory_.back() != '/') ? "/" : "";
 }
@@ -95,6 +89,10 @@ void FileEncryptor::Decrypt(const string& filename) const {
   string old_name = GetOriginalFilename(filename);
   FileSource f(filename.c_str(), true,
       new HexDecoder(new StreamTransformationFilter(d, new FileSink(old_name.c_str()))));
+}
+
+string FileEncryptor::Export() const {
+  return Base64Encode(const_cast<byte*>(iv_)) + '\n' + Base64Encode(const_cast<byte*>(key_));
 }
 
 

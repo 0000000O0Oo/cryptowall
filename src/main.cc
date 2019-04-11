@@ -21,5 +21,6 @@ int main() {
     encryptor.Decrypt(file + ".fuxsc");
   }
 
+  cout << encryptor.Export() << endl;
   return EXIT_SUCCESS;
 }

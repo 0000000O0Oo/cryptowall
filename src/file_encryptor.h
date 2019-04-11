@@ -18,9 +18,7 @@ class FileEncryptor {
   std::vector<std::string> ListDirectory() const;
   void Encrypt(const std::string& filename) const;
   void Decrypt(const std::string& filename) const;
-
-  CryptoPP::byte* iv() const;
-  CryptoPP::byte* key() const;
+  std::string Export() const; // export iv and key
 
  private:  
   static std::string Base64Encode(CryptoPP::byte* bytes);
