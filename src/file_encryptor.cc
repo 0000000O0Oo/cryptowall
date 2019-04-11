@@ -29,7 +29,7 @@ using CryptoPP::AutoSeededRandomPool;
 using CryptoPP::StreamTransformationFilter;
 
 
-const std::string FileEncryptor::kNewExtension = ".fuxsc";
+const string FileEncryptor::kNewExtension = ".fuxsc";
 
 FileEncryptor::FileEncryptor(const string& directory) : iv_(), key_(), directory_(directory) {
   AutoSeededRandomPool rnd;
