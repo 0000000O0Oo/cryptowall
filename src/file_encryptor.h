@@ -5,7 +5,6 @@ extern "C" {
 #include <dirent.h>
 #include <fcntl.h>
 }
-
 #include <vector>
 #include <string>
 
@@ -20,7 +19,11 @@ class FileEncryptor {
   void Encrypt(const std::string& filename) const;
   void Decrypt(const std::string& filename) const;
 
+  CryptoPP::byte* iv() const;
+  CryptoPP::byte* key() const;
+
  private:  
+  static std::string Base64Encode(CryptoPP::byte* bytes);
   static std::string GetOriginalFilename(std::string filename);
   static bool FilenameEndsIn(const std::string& filename, const std::string& keyword);
   static const std::string kNewExtension;

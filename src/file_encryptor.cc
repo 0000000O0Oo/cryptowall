@@ -1,7 +1,5 @@
 #include "file_encryptor.h"
 
-#include <iostream>
-#include <fstream>
 #include <cstring>
 #include <queue>
 
@@ -9,18 +7,21 @@
 #include <cryptopp/modes.h>
 #include <cryptopp/files.h>
 #include <cryptopp/hex.h>
+#include <cryptopp/base64.h>
 
 using std::queue;
 using std::vector;
 using std::string;
-using std::ifstream;
-using std::ofstream;
+using CryptoPP::byte;
 using CryptoPP::AES;
 using CryptoPP::CFB_Mode;
 using CryptoPP::FileSource;
 using CryptoPP::FileSink;
+using CryptoPP::StringSink;
 using CryptoPP::HexEncoder;
 using CryptoPP::HexDecoder;
+using CryptoPP::Base64Encoder;
+using CryptoPP::StringSource;
 using CryptoPP::AutoSeededRandomPool;
 using CryptoPP::StreamTransformationFilter;
 
@@ -31,6 +32,12 @@ FileEncryptor::FileEncryptor(const string& directory) : iv_(), key_(), directory
   AutoSeededRandomPool rnd;
   rnd.GenerateBlock(iv_, AES::DEFAULT_BLOCKSIZE);
   rnd.GenerateBlock(key_, AES::DEFAULT_KEYLENGTH);
+
+  //string b64iv = Base64Encode(iv_);
+  //string b64key = Base64Encode(key_);
+
+  //std::cout << b64iv << std::endl;
+  //std::cout << b64key << std::endl;
 
   // If `directory` doesn't end with a slash, then append a slash.
   directory_ += (directory_.back() != '/') ? "/" : "";
@@ -90,6 +97,12 @@ void FileEncryptor::Decrypt(const string& filename) const {
       new HexDecoder(new StreamTransformationFilter(d, new FileSink(old_name.c_str()))));
 }
 
+
+string FileEncryptor::Base64Encode(byte* bytes) {
+  string s;
+  StringSource ssiv(bytes, sizeof(bytes), true, new Base64Encoder(new StringSink(s), false));
+  return s;
+}
 
 string FileEncryptor::GetOriginalFilename(string filename) {
   return filename.erase(filename.size() - kNewExtension.size()) + ".res";
