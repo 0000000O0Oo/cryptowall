@@ -56,7 +56,7 @@ if __name__ == '__main__':
         '#endif // FUXSOCY_NOTE_H_'
     ]
 
-    with open('src/note.h', 'w') as fout:
+    with open('src/malware/note.h', 'w') as fout:
         fout.write('\n'.join(content_part1))
         fout.write(generate_string_dcl_lines('html', b64encoded[0]))
         fout.write(generate_string_dcl_lines('css', b64encoded[1]))
