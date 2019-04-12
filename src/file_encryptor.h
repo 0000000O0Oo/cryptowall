@@ -21,7 +21,7 @@ class FileEncryptor {
   std::string Export() const; // export iv and key
 
  private:  
-  static std::string Base64Encode(CryptoPP::byte* bytes);
+  static std::string Base64Encode(const CryptoPP::byte* bytes);
   static std::string GetOriginalFilename(std::string filename);
   static bool FilenameEndsIn(const std::string& filename, const std::string& keyword);
   static const std::string kNewExtension;

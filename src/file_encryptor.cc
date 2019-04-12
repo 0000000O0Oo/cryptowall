@@ -78,7 +78,7 @@ void FileEncryptor::Encrypt(const string& filename) const {
   FileSource f(filename.c_str(), true,
       new StreamTransformationFilter(e, new HexEncoder(new FileSink(new_name.c_str()))));
 
-  unlink(filename.c_str());
+  remove(filename.c_str());
 }
 
 void FileEncryptor::Decrypt(const string& filename) const {
@@ -94,15 +94,15 @@ void FileEncryptor::Decrypt(const string& filename) const {
   FileSource f(filename.c_str(), true,
       new HexDecoder(new StreamTransformationFilter(d, new FileSink(old_name.c_str()))));
 
-  unlink(filename.c_str());
+  remove(filename.c_str());
 }
 
 string FileEncryptor::Export() const {
-  return Base64Encode(const_cast<byte*>(iv_)) + '\n' + Base64Encode(const_cast<byte*>(key_));
+  return Base64Encode(iv_) + '\n' + Base64Encode(key_);
 }
 
 
-string FileEncryptor::Base64Encode(byte* bytes) {
+string FileEncryptor::Base64Encode(const byte* bytes) {
   string s;
   StringSource ssiv(bytes, sizeof(bytes), true, new Base64Encoder(new StringSink(s), false));
   return s;
@@ -112,7 +112,7 @@ string FileEncryptor::GetOriginalFilename(string filename) {
   return filename.erase(filename.size() - kNewExtension.size());
 }
 
-bool FileEncryptor::FilenameEndsIn(const std::string& filename, const std::string& keyword) {
+bool FileEncryptor::FilenameEndsIn(const string& filename, const string& keyword) {
   return filename.size() >= keyword.size()
     && !filename.compare(filename.size() - keyword.size(), keyword.size(), keyword);
 }
