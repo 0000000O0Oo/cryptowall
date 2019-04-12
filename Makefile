@@ -4,6 +4,7 @@ SRC=$(wildcard src/*.cc)
 BIN=main
 
 all:
+	./scripts/generate_note_h.py
 	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS)
 
 %.clean:
