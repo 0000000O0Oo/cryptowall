@@ -4,7 +4,7 @@
 import base64
 import htmlmin
 
-# Prepare note.h header and place it under src/
+# Generate note.h from HTML/CSS and place it under src/
 
 def minify_html(filename: str) -> str:
     """ Read the HTML, minify it, and return the minified content. """
