@@ -10,7 +10,8 @@ extern "C" {
 #include <cryptopp/modes.h>
 #include <cryptopp/files.h>
 #include <cryptopp/hex.h>
-#include <cryptopp/base64.h>
+
+#include "util.h"
 
 using std::queue;
 using std::vector;
@@ -20,31 +21,37 @@ using CryptoPP::AES;
 using CryptoPP::CFB_Mode;
 using CryptoPP::FileSource;
 using CryptoPP::FileSink;
-using CryptoPP::StringSink;
 using CryptoPP::HexEncoder;
 using CryptoPP::HexDecoder;
-using CryptoPP::Base64Encoder;
-using CryptoPP::StringSource;
 using CryptoPP::AutoSeededRandomPool;
 using CryptoPP::StreamTransformationFilter;
+using string_util::Base64Encode;
+using string_util::Base64Decode;
 
 
 const string FileEncryptor::kNewExtension = ".fuxsc";
 
-FileEncryptor::FileEncryptor(const string& directory) : iv_(), key_(), directory_(directory) {
+FileEncryptor::FileEncryptor() {
   AutoSeededRandomPool rnd;
   rnd.GenerateBlock(iv_, AES::DEFAULT_BLOCKSIZE);
   rnd.GenerateBlock(key_, AES::DEFAULT_KEYLENGTH);
+}
 
-  // If `directory` doesn't end with a slash, then append a slash.
-  directory_ += (directory_.back() != '/') ? "/" : "";
+FileEncryptor::FileEncryptor(const string& b64_iv, const string& b64_key) {
+  string&& iv_str = Base64Decode(b64_iv);
+  string&& key_str = Base64Decode(b64_key);
+  std::memcpy(iv_, iv_str.c_str(), iv_str.size());
+  std::memcpy(key_, key_str.c_str(), key_str.size());
 }
 
 
-vector<string> FileEncryptor::ListDirectory() const {
+vector<string> FileEncryptor::ListDirectory(string directory) const {
+  // If `directory` doesn't end with a slash, then append a slash.
+  directory += (directory.back() != '/') ? "/" : "";
+
   vector<string> files;
   queue<string> q;
-  q.push(directory_);
+  q.push(directory);
 
   while (!q.empty()) {
     DIR* dir;
@@ -57,7 +64,7 @@ vector<string> FileEncryptor::ListDirectory() const {
         // otherwise, add it to the vector.
         if (strcmp(ent->d_name, ".") && strcmp(ent->d_name, "..")) {
           if (ent->d_type == DT_DIR) {
-            q.push(directory_ + ent->d_name + '/');
+            q.push(directory + ent->d_name + '/');
           } else {
             files.push_back(q.front() + ent->d_name);
           }
@@ -98,15 +105,10 @@ void FileEncryptor::Decrypt(const string& filename) const {
 }
 
 string FileEncryptor::Export() const {
-  return Base64Encode(iv_) + '\n' + Base64Encode(key_);
+  return Base64Encode(iv_, sizeof(iv_)) + '\n' + Base64Encode(key_, sizeof(key_));
 }
 
 
-string FileEncryptor::Base64Encode(const byte* bytes) {
-  string s;
-  StringSource ssiv(bytes, sizeof(bytes), true, new Base64Encoder(new StringSink(s), false));
-  return s;
-}
 
 string FileEncryptor::GetOriginalFilename(string filename) {
   return filename.erase(filename.size() - kNewExtension.size());

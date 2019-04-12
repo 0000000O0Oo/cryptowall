@@ -11,9 +11,9 @@ using std::vector;
 using std::string;
 
 int main(int argc, char* args[]) {
-  FileEncryptor encryptor("/home/aesophor/Temp/");
+  FileEncryptor encryptor;
 
-  for (const auto& file : encryptor.ListDirectory()) {
+  for (const auto& file : encryptor.ListDirectory("/home/aesophor/Temp")) {
     encryptor.Encrypt(file);
   }
   cout << encryptor.Export() << endl;
