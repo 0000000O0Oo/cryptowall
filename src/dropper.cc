@@ -27,4 +27,8 @@ void Dropper::DropNote() const {
   fout.open(install_path_ + kCssFilename_);
   fout << Base64Decode(note::css);
   fout.close();
+
+  fout.open(install_path_ + kLogoFilename_);
+  fout << Base64Decode(note::logo);
+  fout.close();
 }
