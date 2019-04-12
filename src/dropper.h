@@ -11,7 +11,6 @@ class Dropper {
   void DropNote() const;
 
  private:
-  
 };
 
 #endif // FUXSOCY_DROPPER_H_
