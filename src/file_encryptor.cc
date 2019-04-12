@@ -31,13 +31,13 @@ using string_util::Base64Decode;
 
 const string FileEncryptor::kNewExtension = ".fuxsc";
 
-FileEncryptor::FileEncryptor() {
+FileEncryptor::FileEncryptor() : count_(0) {
   AutoSeededRandomPool rnd;
   rnd.GenerateBlock(iv_, AES::DEFAULT_BLOCKSIZE);
   rnd.GenerateBlock(key_, AES::DEFAULT_KEYLENGTH);
 }
 
-FileEncryptor::FileEncryptor(const string& b64_iv, const string& b64_key) {
+FileEncryptor::FileEncryptor(const string& b64_iv, const string& b64_key) : count_(0) {
   string&& iv_str = Base64Decode(b64_iv);
   string&& key_str = Base64Decode(b64_key);
   std::memcpy(iv_, iv_str.c_str(), iv_str.size());
@@ -78,7 +78,7 @@ vector<string> FileEncryptor::ListDirectory(string directory) const {
 }
 
 // The following object created with new do not require explicit destruction.
-void FileEncryptor::Encrypt(const string& filename) const {
+void FileEncryptor::Encrypt(const string& filename) {
   CFB_Mode<AES>::Encryption e(key_, sizeof(key_), iv_);
 
   string new_name = filename + kNewExtension;
@@ -86,9 +86,10 @@ void FileEncryptor::Encrypt(const string& filename) const {
       new StreamTransformationFilter(e, new HexEncoder(new FileSink(new_name.c_str()))));
 
   remove(filename.c_str());
+  count_++;
 }
 
-void FileEncryptor::Decrypt(const string& filename) const {
+void FileEncryptor::Decrypt(const string& filename) {
   // Make sure the length of the file to decrypt is long enough.
   // It has at least to be something like 'a.fuxsc', i.e., length >= 7.
   if (!FilenameEndsIn(filename, kNewExtension) || filename.size() <= kNewExtension.size()) {
@@ -106,6 +107,10 @@ void FileEncryptor::Decrypt(const string& filename) const {
 
 string FileEncryptor::Export() const {
   return Base64Encode(iv_, sizeof(iv_)) + '\n' + Base64Encode(key_, sizeof(key_));
+}
+
+int FileEncryptor::count() const {
+  return count_;
 }
 
 
