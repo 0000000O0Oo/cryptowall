@@ -1,1 +1,0 @@
-../malware/file_encryptor.h

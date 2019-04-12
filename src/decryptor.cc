@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "file_encryptor.h"
+#include "malware/file_encryptor.h"
 
 using std::cin;
 using std::cout;
