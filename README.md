@@ -1,4 +1,4 @@
-# #OPdailyallowance.
+# DailyAllowance
 ![](https://raw.githubusercontent.com/fuxsocy/DailyAllowance/master/.meta/cover.png)
 
 ## Disclaimer
