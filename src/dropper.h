@@ -11,6 +11,11 @@ class Dropper {
   void DropNote() const;
 
  private:
+  static const std::string kHtmlFilename_;
+  static const std::string kCssFilename_;
+  static const std::string kLogoFilename_;
+
+  std::string install_path_;
 };
 
 #endif // FUXSOCY_DROPPER_H_

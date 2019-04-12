@@ -109,7 +109,6 @@ string FileEncryptor::Export() const {
 }
 
 
-
 string FileEncryptor::GetOriginalFilename(string filename) {
   return filename.erase(filename.size() - kNewExtension.size());
 }
