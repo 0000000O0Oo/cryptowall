@@ -15,6 +15,10 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
+from fuxsocy.views import victim
+
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+
+    url(r'^victim/add$', victim.add),
 ]
